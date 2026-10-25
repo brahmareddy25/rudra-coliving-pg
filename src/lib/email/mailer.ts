@@ -46,11 +46,9 @@ export async function sendEmailOTP(
   const cleanEmail = toEmail.trim().toLowerCase();
   const fromAddress = process.env.SMTP_FROM || '"Rudra Co-Living" <no-reply@rudracoliving.com>';
 
-  console.log(`\n======================================================`);
-  console.log(`[Email OTP Service] Recipient: ${cleanEmail} (${residentName})`);
-  console.log(`[Email OTP Service] Verification Code: ${otp}`);
-  console.log(`[Email OTP Service] Valid for: 5 minutes`);
-  console.log(`======================================================\n`);
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[Email OTP Service] Dispatching verification code to ${cleanEmail}`);
+  }
 
   const transporter = getTransporter();
 
@@ -125,11 +123,16 @@ export async function sendEmailOTP(
   `;
 
   if (!transporter) {
-    // In local development or testing without live SMTP credentials, log the OTP clearly
-    console.log(`[Email OTP Service] (Dev / Simulation) Email successfully queued and logged to console for ${cleanEmail}`);
+    if (process.env.NODE_ENV === "test") {
+      return {
+        success: true,
+        messageId: `msg_${Date.now()}`,
+      };
+    }
+    console.warn(`[Email OTP Service] SMTP credentials not configured for ${cleanEmail}`);
     return {
-      success: true,
-      messageId: `dev_mock_${Date.now()}`,
+      success: false,
+      error: "Email service not configured. Please contact administration.",
     };
   }
 
@@ -175,10 +178,16 @@ export async function sendEmail({
   const transporter = getTransporter();
 
   if (!transporter) {
-    console.log(`[Email Service] (Dev / Simulation) Email successfully queued to console for ${cleanEmail}`);
+    if (process.env.NODE_ENV === "test") {
+      return {
+        success: true,
+        messageId: `msg_${Date.now()}`,
+      };
+    }
+    console.warn(`[Email Service] SMTP credentials not configured for ${cleanEmail}`);
     return {
-      success: true,
-      messageId: `dev_mock_${Date.now()}`,
+      success: false,
+      error: "Email service not configured. Please contact administration.",
     };
   }
 

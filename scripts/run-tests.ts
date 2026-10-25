@@ -22,6 +22,7 @@ import { signToken, verifyToken } from "../src/lib/auth/jwt";
 import { seedDatabase } from "./seed";
 
 async function runTests() {
+  (process.env as any).NODE_ENV = "test";
   console.log("🧪 Running Rudra Co-Living Automated Test Suite...\n");
   await connectDB();
   await seedDatabase();

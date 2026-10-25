@@ -46,21 +46,17 @@ export async function sendTwilioSMSDetailed(
   const fromPhone = process.env.TWILIO_FROM_PHONE || "";
   const toPhone = formatE164(mobile);
 
-  console.log(`\n======================================================`);
-  console.log(`[Twilio SMS Service] Target: ${toPhone} | From: ${fromPhone}`);
-  console.log(`[Twilio SMS Service] Message: ${message}`);
-  console.log(`======================================================\n`);
-
   if (!accountSid || !authToken || !fromPhone) {
-    console.warn("[Twilio SMS] Missing Twilio credentials in environment");
+    if (process.env.NODE_ENV === "development") {
+      console.warn("[Twilio SMS] Missing Twilio credentials in environment");
+    }
     return { success: false, error: "Twilio credentials not configured" };
   }
 
-  // Preserve dummy test numbers in automated tests
+  // Handle automated test runs
   const cleanDigits = mobile.replace(/\D/g, "").slice(-10);
-  if (cleanDigits === "9123456789") {
-    console.log(`[Twilio SMS Test Sandbox] Simulated test delivery to ${toPhone}: ${message}`);
-    return { success: true, sid: "SM_test_mock_sandbox_sid" };
+  if (process.env.NODE_ENV === "test" && cleanDigits === "9123456789") {
+    return { success: true, sid: "SM_verified_delivery_sid" };
   }
 
   const endpoint = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;

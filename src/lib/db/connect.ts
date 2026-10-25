@@ -41,6 +41,10 @@ export async function connectDB(): Promise<typeof mongoose> {
         return m;
       })
       .catch(async (err) => {
+        if (process.env.NODE_ENV === "production") {
+          console.error(`[Database] MongoDB connection failed in production: ${err.message}`);
+          throw err;
+        }
         console.warn(`[Database] Direct MongoDB connection failed (${err.message}). Starting MongoMemoryServer fallback...`);
         try {
           const { MongoMemoryServer } = await import("mongodb-memory-server");
