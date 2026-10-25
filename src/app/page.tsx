@@ -43,15 +43,9 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors"
-            >
-              Resident Sign In
-            </Link>
-            <Link
-              href="/login"
               className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-emerald-900/40 transition-all flex items-center gap-1.5"
             >
-              Resident Portal <ArrowRight className="w-4 h-4" />
+              Login <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
@@ -76,19 +70,14 @@ export default function HomePage() {
             Experience the comfort of wholesome, home-style food, restful living spaces, and a warm, supportive community. At Rudra Co-Living, you enjoy peaceful hospitality and personalized care every single day.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
+          <div className="pt-2 flex justify-center lg:justify-start">
             <Link
               href="/login"
               className="px-8 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl shadow-xl shadow-emerald-950/60 transition-all flex items-center gap-2 text-base"
             >
               <Lock className="w-4 h-4 text-amber-300" />
-              Sign In to Resident Portal
-            </Link>
-            <Link
-              href="/login"
-              className="px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold rounded-xl transition-all text-base"
-            >
-              First Time Login (Assigned Password)
+              Login
+              <ArrowRight className="w-4 h-4 ml-1" />
             </Link>
           </div>
 
