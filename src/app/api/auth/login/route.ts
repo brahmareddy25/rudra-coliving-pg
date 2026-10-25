@@ -138,7 +138,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error("[Login API] Error:", error);
     return NextResponse.json(
-      { error: "Authentication failed. Please try again." },
+      { error: error?.message || "Authentication failed. Please try again." },
       { status: 500 }
     );
   }

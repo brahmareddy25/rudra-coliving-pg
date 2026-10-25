@@ -29,21 +29,28 @@ export async function connectDB(): Promise<typeof mongoose> {
   if (!cached.promise) {
     const opts: mongoose.ConnectOptions = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 15000,
+      connectTimeoutMS: 15000,
     };
 
-    const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/rudra-coliving";
+    const uri = process.env.MONGODB_URI;
+    if (!uri && process.env.NODE_ENV === "production") {
+      throw new Error("MONGODB_URI environment variable is missing on the server. Please check AWS Amplify Environment variables.");
+    }
+
+    const effectiveUri = uri || "mongodb://127.0.0.1:27017/rudra-coliving";
 
     cached.promise = mongoose
-      .connect(uri, opts)
+      .connect(effectiveUri, opts)
       .then((m) => {
-        console.log(`[Database] Connected to MongoDB at ${uri.replace(/:([^:@]{3,})@/, ":***@")}`);
+        console.log(`[Database] Connected to MongoDB at ${effectiveUri.replace(/:([^:@]{3,})@/, ":***@")}`);
         return m;
       })
       .catch(async (err) => {
-        if (process.env.NODE_ENV === "production") {
-          console.error(`[Database] MongoDB connection failed in production: ${err.message}`);
-          throw err;
+        cached.promise = null;
+        if (process.env.NODE_ENV === "production" || effectiveUri.startsWith("mongodb+srv://")) {
+          console.error(`[Database] MongoDB connection failed: ${err.message}`);
+          throw new Error(`Database connection failed: ${err.message}. If using MongoDB Atlas, verify 0.0.0.0/0 is whitelisted in Network Access.`);
         }
         console.warn(`[Database] Direct MongoDB connection failed (${err.message}). Starting MongoMemoryServer fallback...`);
         try {
